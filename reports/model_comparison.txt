@@ -1,0 +1,51 @@
+MODEL EVALUATION REPORT
+Model: Logistic Regression
+Accuracy:  0.8845
+Precision: 0.9098
+Recall:    0.9517
+F1 Score:  0.9303
+RMSE:      0.3399
+
+Confusion Matrix:
+[[1136  764]
+ [ 391 7709]]
+
+Classification Report:
+                   precision    recall  f1-score   support
+
+   No Maintenance       0.74      0.60      0.66      1900
+Needs Maintenance       0.91      0.95      0.93      8100
+
+         accuracy                           0.88     10000
+        macro avg       0.83      0.77      0.80     10000
+     weighted avg       0.88      0.88      0.88     10000
+
+Model: Decision Tree
+Accuracy:  0.9352
+Precision: 0.9407
+Recall:    0.9819
+F1 Score:  0.9609
+RMSE:      0.2546
+
+Confusion Matrix:
+[[1399  501]
+ [ 147 7953]]
+
+Classification Report:
+                   precision    recall  f1-score   support
+
+   No Maintenance       0.90      0.74      0.81      1900
+Needs Maintenance       0.94      0.98      0.96      8100
+
+         accuracy                           0.94     10000
+        macro avg       0.92      0.86      0.89     10000
+     weighted avg       0.93      0.94      0.93     10000
+
+
+COMPARISON SUMMARY
+Metric          Logistic Reg    Decision Tree  
+accuracy        0.8845          0.9352         
+precision       0.9098          0.9407         
+recall          0.9517          0.9819         
+f1_score        0.9303          0.9609         
+rmse            0.3399          0.2546         
