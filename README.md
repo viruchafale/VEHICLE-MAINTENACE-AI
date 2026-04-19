@@ -24,6 +24,87 @@ Fleet managers and vehicle owners often struggle to balance maintenance costs wi
 
 For a deep-dive into the step-by-step logic, check out [HOW_IT_WORKS.md](HOW_IT_WORKS.md).
 
+### Architecture & Data Flow
+
+```mermaid
+flowchart TD
+    %% User Input & Streamlit UI
+    subgraph Frontend [UI Layer - Streamlit]
+        User([User])
+        UI[app.py - Dashboard Forms & Chat]
+        User -- Inputs Vehicle Data --> UI
+    end
+
+    %% ML Deterministic Pre-processing
+    subgraph ML_Layer [Deterministic ML Layer]
+        pipeline[preprocessor.pkl\nScale & Encode Data]
+        model[maintenance_model.pkl\nScikit-learn Logistic Regression]
+        
+        UI -- Raw Data DataFrame --> pipeline
+        pipeline --> model
+        model -- Returns Risk Score 0.0 - 1.0 --> ContextCache
+    end
+
+    %% Short-term memory buffer
+    ContextCache[(Session State Context)]
+    
+    %% AI Generative Workflows
+    subgraph AI_Layer [Agentic AI Copilot - LangGraph]
+        direction TB
+        
+        %% Conditional Routing
+        subgraph Graph1 [Triage Agent]
+            router{Risk > 0.5?}
+            low[Routine Route Node\nFast Summary]
+            high[High-Risk RAG Node\nDeep Diagnostics]
+        end
+
+        %% Human-in-the-loop
+        subgraph Graph2 [Scheduler Agent]
+            draft[Draft 90-day Schedule]
+            hitl((Human Interuption\nApproval Required))
+            final[Finalize Schedule]
+        end
+
+        %% ReAct Tool Calling
+        subgraph Graph3 [Chat Agent]
+            react((ReAct Toolkit Loop))
+            tools[Tools: Urgency, Cost, Diagnostics]
+            react <--> tools
+        end
+    end
+
+    %% Vector Database for RAG
+    VectorDB[(ChromaDB Vector Store\nRepair Manuals & Context)]
+
+    %% Execution flow
+    ContextCache -->|Select Agent| Graph1
+    ContextCache -->|Select Agent| Graph2
+    ContextCache -->|Select Agent| Graph3
+
+    %% Graph flows
+    Graph1 --> router
+    router -- No --> low
+    router -- Yes --> high
+    high <--> VectorDB
+
+    Graph2 --> draft
+    draft --> hitl
+    hitl -- Approved via UI --> final
+
+    %% Outputs going back to UI
+    low --> UI
+    high --> UI
+    final --> UI
+    react --> UI
+    
+    style User fill:#fff,stroke:#fff,stroke-width:2px,color:#000
+    style UI fill:#ff4b4b,stroke:#fff,stroke-width:2px,color:#fff
+    style ML_Layer fill:#f9a03f,stroke:#fff,stroke-width:2px,color:#000
+    style AI_Layer fill:#2c8cff,stroke:#fff,stroke-width:2px,color:#fff
+    style VectorDB fill:#1fc16b,stroke:#fff,stroke-width:2px,color:#fff
+```
+
 ### 1. The ML Layer (The "Brain")
 Users input vehicle data (Age, Mileage in meters, Engine Size, Component conditions, etc.). A trained Scikit-Learn model (`maintenance_model.pkl`) evaluates this data and outputs a **Risk Score (0.0 to 1.0)**. 
 * **< 0.50:** Routine Route ✅
