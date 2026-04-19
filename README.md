@@ -3,38 +3,53 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)]()
 [![ML Framework](https://img.shields.io/badge/ML-Scikit--Learn-orange)]()
 [![UI Framework](https://img.shields.io/badge/UI-Streamlit-red)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![LangGraph](https://img.shields.io/badge/Agent-LangGraph-yellow)]()
 
-**Vehicle Maintenance AI** is a robust machine learning application designed to predict whether a vehicle requires maintenance based on various telemetry and usage factors. By analyzing historical data and current vehicle state, it helps fleet managers and individual owners anticipate service needs before failure occurs.
+> **Predictive Machine Learning meets Agentic Decision Support**
 
----
-
-## ✨ Key Features
-
-- **Predictive Intelligence:** Leverages a Logistic Regression model trained on 50,000+ vehicle records.
-- **Interactive Dashboard:** A clean, glassmorphism-inspired Streamlit UI for real-time predictions.
-- **Data-Driven Insights:** Includes comparison charts showing how your vehicle compares to the dataset average.
-- **Automated Pipeline:** Full end-to-end preprocessing pipeline for date engineering and categorical encoding.
-- **Transparency:** Built-in prediction confidence visualization.
+A modern, SaaS-style predictive maintenance platform that combines **traditional Machine Learning** (for risk scoring) with **Agentic AI** (for automated triaging, scheduling, and chatting). Built with Streamlit, Scikit-Learn, and LangGraph.
 
 ---
 
-## � Model Performance
+## 🌟 The Vision
 
-Our current production model (`LogisticRegression`) shows high reliability across multiple metrics:
-
-| Metric | Score |
-| :--- | :--- |
-| **Accuracy** | 95.1% |
-| **Precision** | 96.8% |
-| **Recall** | 97.1% |
-| **F1-Score** | 96.9% |
-
-*Trained on 50,000 samples with an 80/20 split.*
+Fleet managers and vehicle owners often struggle to balance maintenance costs with vehicle safety. This application solves that by creating a seamless pipeline:
+1. **Predict** the exact risk of breakdown using Machine Learning.
+2. **Analyze & Triage** using an Agentic AI workflow.
+3. **Take Action** by generating manager-approved schedules and answering complex maintenance queries.
 
 ---
 
-## 🚀 Quick Start (Run Locally)
+## ⚙️ How It Works: The Architecture
+
+For a deep-dive into the step-by-step logic, check out [HOW_IT_WORKS.md](HOW_IT_WORKS.md).
+
+### 1. The ML Layer (The "Brain")
+Users input vehicle data (Age, Mileage in meters, Engine Size, Component conditions, etc.). A trained Scikit-Learn model (`maintenance_model.pkl`) evaluates this data and outputs a **Risk Score (0.0 to 1.0)**. 
+* **< 0.50:** Routine Route ✅
+* **>= 0.50:** High-Risk Route ⚠️
+
+### 2. The AI Copilot Layer (The "Agents")
+Once a Risk Score is generated, the vehicle context is passed to the **AI Copilot**, powered by LangChain and LangGraph. It consists of specialized workflows:
+
+*   **🩺 Agent 1: The Triage Specialist (Conditional Routing):** Bypasses heavy processing for low-risk vehicles, but triggers a deeper RAG (Retrieval-Augmented Generation) search for high-risk vehicles to generate critical action reports.
+*   **📅 Agent 2: The Master Scheduler (Human-in-the-Loop):** Drafts a 90-day maintenance schedule, but **pauses** execution to wait for Human (Manager) approval before finalizing the plan.
+*   **💬 Agent 3: The Toolkit Chatbot (ReAct pattern):** An autonomous Chat Agent that accesses predefined tools (Cost Estimator, Urgency Checker) to synthesize exact answers for the user.
+*   **🌐 Agent 4: The Fleet Strategist:** Aggregates data from the entire fleet to generate high-level business intelligence reports.
+
+---
+
+## 🛠 Tech Stack
+
+* **Frontend:** Streamlit 
+* **Machine Learning:** Scikit-Learn, Pandas, NumPy, Joblib
+* **Agentic AI:** LangGraph, LangChain, LangChain-Groq
+* **Vector Database:** ChromaDB, Sentence-Transformers
+* **LLM Provider:** Groq (Llama-3) & OpenAI
+
+---
+
+## 🚀 Quick Start (Local Setup)
 
 ### 1. Clone & Navigate
 ```bash
@@ -43,7 +58,6 @@ cd VEHICLE-MAINTENACE-AI
 ```
 
 ### 2. Prepare Environment
-We recommend using a virtual environment to keep your system clean:
 ```bash
 # Create and activate venv
 python3 -m venv .venv
@@ -53,61 +67,22 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Launch Application
-```bash
-streamlit run app.py
-```
-> The dashboard will automatically open at **`http://localhost:8501`**.
-
----
-
-## 🏗 Repository Structure
-
-```text
-.
-├── app.py                 # Streamlit Web Application
-├── train.py               # Preprocessing & Feature Engineering Pipeline
-├── data/
-│   ├── raw/               # Original telemetry data
-│   └── processed/         # Cleaned data for model training
-├── models/
-│   ├── maintenance_model.pkl  # Production Model
-│   └── preprocessor.pkl       # Feature Encoding Pipeline
-├── notebooks/             # Research & Experimentation
-└── requirements.txt       # Project Dependencies
+### 3. Configure Environment Variables
+Create a `.env` file in the root directory:
+```env
+GROQ_API_KEY=your_groq_api_key
+OPENAI_API_KEY=your_openai_api_key
 ```
 
----
-
-## 🛠 Features Analyzed
-
-The model considers **19 distinct features** to make a prediction, including:
-- **Vehicle Specs:** Engine Size, Model, Fuel Type, Age.
-- **Usage:** Mileage, Odometer Reading, Days since last service.
-- **Condition:** Tire, Brake, and Battery health statuses.
-- **History:** Accident count, Service history frequency.
-
----
-
-## � Advanced Usage
-
-### Re-running the Pipeline
-To clean the raw data and generate a fresh `vehicle_maintenance_cleaned.csv`:
+### 4. Build Models & Databases (If needed)
 ```bash
 python train.py
-```
-
-### Build the Vector Store
-To generate the local Chroma index used by the retriever:
-```bash
 python build_chroma_db.py
 ```
-This creates `data/chroma_db/` from `data/maintenance_guidelines.txt` when available, or from the built-in fallback guidelines if the file is missing.
 
-### Experimentation
-Explore the training logic or test new models via Jupyter:
+### 5. Launch the Dashboard
 ```bash
-python -m notebook notebooks/new.ipynb
+streamlit run app.py
 ```
 
 ---
