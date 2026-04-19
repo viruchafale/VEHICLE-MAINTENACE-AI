@@ -429,8 +429,8 @@ def vehicle_form() -> tuple[bool, pd.DataFrame, dict]:
 
         with col2:
             st.markdown("**Usage & Service**")
-            mileage = st.number_input("Mileage (km)", min_value=30000, max_value=80000, value=55000, step=5000)
-            odometer_reading = st.number_input("Odometer (km)", min_value=1000, max_value=150000, value=75000, step=5000)
+            mileage = st.number_input("Mileage (m)", min_value=30000, max_value=80000, value=55000, step=5000)
+            odometer_reading = st.number_input("Odometer (m)", min_value=1000, max_value=150000, value=75000, step=5000)
             service_history = st.number_input("Past Services", min_value=1, max_value=10, value=5)
             last_service_days_ago = st.number_input("Days Since Last Service", min_value=700, max_value=1100, value=896, step=10)
             warranty_days_remaining = st.number_input("Warranty Days Left", min_value=-700, max_value=50, value=-320, step=10)
